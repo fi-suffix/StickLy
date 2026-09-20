@@ -66,6 +66,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
@@ -105,6 +107,10 @@ fun PackOverviewScreen(
     }
 
     LaunchedEffect(packId) {
+        viewModel.refreshStatus()
+    }
+
+    LifecycleEventEffect(Lifecycle.Event.ON_RESUME) {
         viewModel.refreshStatus()
     }
 

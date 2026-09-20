@@ -40,22 +40,19 @@ object WhatsAppApi {
     }
 
     fun isPackAdded(context: Context, authority: String, identifier: String): Boolean {
-        val bases = listOf(
-            "content://com.whatsapp.provider.sticker_whitelist_check/is_whitelisted",
-            "content://com.whatsapp.w4b.provider.sticker_whitelist_check/is_whitelisted",
+        val uri = Uri.parse(
+            "content://com.whatsapp.provider.sticker_whitelist_check/is_whitelisted" +
+                "?authority='$authority'&identifier='$identifier'"
         )
-        bases.forEach { base ->
-            try {
-                val uri = Uri.parse("$base?authority='$authority'&identifier='$identifier'")
-                context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
-                    if (cursor.moveToFirst()) {
-                        val index = cursor.getColumnIndex("result")
-                        if (index >= 0 && cursor.getInt(index) == 1) return true
-                    }
-                }
-            } catch (_: Exception) {
-            }
+        return try {
+            context.contentResolver.query(uri, null, null, null, null)?.use { cursor ->
+                if (cursor.moveToFirst()) {
+                    val index = cursor.getColumnIndex("result")
+                    index >= 0 && cursor.getInt(index) == 1
+                } else false
+            } ?: false
+        } catch (_: Exception) {
+            false
         }
-        return false
     }
 }
